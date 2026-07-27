@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planta de Reciclaje de Escombros - La Guaira 2026</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            tech: {
+              50: '#f0f9ff',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-size: 15px;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-emerald-500 selection:text-white">
+
+  <header class="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-recycle"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">PLAN LA GUAIRA RECICLA 2026</h1>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
+        <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+          <span class="text-slate-500 block text-xs">Escombros totales:</span>
+          <span class="font-bold text-emerald-700 font-mono-code text-sm">1.2 - 2.1 millones de toneladas</span>
+        </div>
+        <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+          <span class="text-slate-500 block text-xs">Capacidad de la planta:</span>
+          <span class="font-bold text-cyan-700 font-mono-code text-sm">1,600 t/día (448,000 t/año)</span>
+        </div>
+        <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+          <span class="text-slate-500 block text-xs">Ahorro de agua dulce:</span>
+          <span class="font-bold text-teal-700 font-mono-code text-sm">1.2 millones de litros/año</span>
+        </div>
+        <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+          <span class="text-slate-500 block text-xs">Límite de cloruros:</span>
+          <span class="font-bold text-amber-700 font-mono-code text-sm">&lt; 0.06%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 border-t border-slate-200">
+      <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-2.5 text-sm sm:text-base font-semibold scrollbar-none" id="tabs-nav">
+        <button onclick="switchTab('tab-resumen')" id="btn-tab-resumen" class="tab-btn px-3.5 py-2 rounded-lg text-emerald-700 bg-emerald-50 border border-emerald-200 whitespace-nowrap">
+          <i class="fa-solid fa-chart-pie mr-2"></i> 1. Resumen
+        </button>
+        <button onclick="switchTab('tab-balance')" id="btn-tab-balance" class="tab-btn px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+          <i class="fa-solid fa-diagram-project mr-2"></i> 2. Proceso
+        </button>
+        <button onclick="switchTab('tab-calidad')" id="btn-tab-calidad" class="tab-btn px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+          <i class="fa-solid fa-droplet mr-2"></i> 3. Agua y Cloruros
+        </button>
+        <button onclick="switchTab('tab-equipos')" id="btn-tab-equipos" class="tab-btn px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+          <i class="fa-solid fa-truck-monster mr-2"></i> 4. Equipos
+        </button>
+        <button onclick="switchTab('tab-economico')" id="btn-tab-economico" class="tab-btn px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+          <i class="fa-solid fa-coins mr-2"></i> 5. Inversión
+        </button>
+        <button onclick="switchTab('tab-ambiental')" id="btn-tab-ambiental" class="tab-btn px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+          <i class="fa-solid fa-leaf mr-2"></i> 6. Impacto Ambiental
+        </button>
+        <button onclick="switchTab('tab-social')" id="btn-tab-social" class="tab-btn px-3.5 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+          <i class="fa-solid fa-users mr-2"></i> 7. Impacto Social
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+    <!-- SECCIÓN 1: RESUMEN Y DIAGNÓSTICO -->
+    <section id="tab-resumen" class="tab-content space-y-6">
+      
+      <!-- Context Alert -->
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4">
+        <div class="p-3 bg-amber-100 text-amber-700 rounded-xl text-2xl">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="text-sm sm:text-base">
+          <h3 class="font-bold text-amber-800 text-base sm:text-lg">Diagnóstico: El desafío de los escombros</h3>
+          <p class="text-slate-700 mt-1 leading-relaxed">
+            Tras el sismo de junio 2026, se acumularon entre <strong class="text-amber-800">1.2 y 2.1 millones de toneladas de escombros</strong> en La Guaira. 
+            Sin plantas de procesamiento, este material termina en quebradas y costas, contaminando el ambiente. 
+            La meta es recuperar ecológicamente la zona mediante plantas modulares en un plazo de 3 a 5 años.
+          </p>
+        </div>
+      </div>
+
+      <!-- Problem Metrics Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-red-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Reto Logístico</span>
+              <p class="text-3xl font-extrabold font-mono-code text-red-600 mt-2">480,000</p>
+              <p class="text-sm text-slate-600 mt-1">Viajes de camiones necesarios (40 toneladas por viaje)</p>
+            </div>
+            <div class="p-3 bg-red-50 text-red-500 rounded-xl"><i class="fa-solid fa-truck-moving text-2xl"></i></div>
+          </div>
+          <p class="text-sm text-slate-600 mt-4 leading-relaxed">
+            Con 100 camiones diarios, tardaríamos más de <strong class="text-red-700">13 años</strong> en evacuar todo. 
+            Se necesita procesamiento y trituración modular en el sitio para acelerar la limpieza.
+          </p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-amber-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Cloruros en el concreto</span>
+              <p class="text-3xl font-extrabold font-mono-code text-amber-600 mt-2">&gt; 0.06% Cl⁻</p>
+              <p class="text-sm text-slate-600 mt-1">Límite seguro para estructuras</p>
+            </div>
+            <div class="p-3 bg-amber-50 text-amber-500 rounded-xl"><i class="fa-solid fa-flask-vial text-2xl"></i></div>
+          </div>
+          <p class="text-sm text-slate-600 mt-4 leading-relaxed">
+            El concreto expuesto al mar absorbe sales. Sin un lavado adecuado, estas sales oxidan el acero de refuerzo y debilitan las estructuras. 
+            El lavado debe realizarse en circuito cerrado para proteger los ríos locales.
+          </p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Incentivo Económico</span>
+              <p class="text-3xl font-extrabold font-mono-code text-emerald-600 mt-2">$18 / Ton</p>
+              <p class="text-sm text-slate-600 mt-1">Tarifa preferencial de disposición</p>
+            </div>
+            <div class="p-3 bg-emerald-50 text-emerald-500 rounded-xl"><i class="fa-solid fa-hand-holding-dollar text-2xl"></i></div>
+          </div>
+          <p class="text-sm text-slate-600 mt-4 leading-relaxed">
+            Frente a los más de $30/ton de vertederos lejanos, la planta ofrece una tarifa reducida para organismos públicos y privados, 
+            desincentivando el vertido ilegal.
+          </p>
+        </div>
+      </div>
+
+      <!-- Social Impact Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-indigo-500">
+          <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Empleos Directos</span>
+          <p class="text-3xl font-extrabold font-mono-code text-indigo-600 mt-2">65-75</p>
+          <p class="text-sm text-slate-600 mt-1">Operativos + Administrativos</p>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-teal-500">
+          <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Contratación Local</span>
+          <p class="text-3xl font-extrabold font-mono-code text-teal-600 mt-2">&gt;90%</p>
+          <p class="text-sm text-slate-600 mt-1">Mano de obra de la zona</p>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-cyan-500">
+          <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Salario Promedio</span>
+          <p class="text-3xl font-extrabold font-mono-code text-cyan-600 mt-2">$300-500</p>
+          <p class="text-sm text-slate-600 mt-1">Mensual (según rol)</p>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
+          <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Familias Beneficiadas</span>
+          <p class="text-3xl font-extrabold font-mono-code text-emerald-600 mt-2">260-300</p>
+          <p class="text-sm text-slate-600 mt-1">Aprox. 4 personas por hogar</p>
+        </div>
+      </div>
+
+      <!-- Overview Charts Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Chart 1 -->
+        <div class="glass-card p-6 rounded-2xl">
+          <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i>
+            Tiempo de limpieza: método tradicional vs. planta modular
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-500 mb-4">Años necesarios para procesar 1.2 millones de toneladas</p>
+          <div class="h-64 relative">
+            <canvas id="chartTimeComparison"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2 -->
+        <div class="glass-card p-6 rounded-2xl">
+          <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-scale-balanced text-cyan-500"></i>
+            Costo de disposición por tonelada
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-500 mb-4">Incentivo para evitar el vertido ilegal</p>
+          <div class="h-64 relative">
+            <canvas id="chartCostComparison"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Impact Table -->
+      <div class="glass-card p-6 rounded-2xl">
+        <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-bullseye text-emerald-500"></i>
+          Metas de impacto ambiental y social
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="text-emerald-600 font-mono-code text-2xl font-extrabold">448,000 t/año</div>
+            <div class="text-sm font-bold text-slate-800 mt-1">Procesamiento anual</div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-2">1,600 t/día durante 280 días. Todo el material se recicla o va a vertedero autorizado.</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="text-cyan-600 font-mono-code text-2xl font-extrabold">1.2 millones de litros</div>
+            <div class="text-sm font-bold text-slate-800 mt-1">Ahorro de agua dulce</div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-2">El circuito cerrado recircula el 95% del agua. Sin él, gastaríamos 24 millones de litros al año.</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="text-teal-600 font-mono-code text-2xl font-extrabold">15,000 t</div>
+            <div class="text-sm font-bold text-slate-800 mt-1">Acero recuperado</div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-2">Extraído por separadores magnéticos, evitando la extracción de mineral nuevo.</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="text-amber-600 font-mono-code text-2xl font-extrabold">65-75</div>
+            <div class="text-sm font-bold text-slate-800 mt-1">Empleos directos</div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-2">Contratación local con equipo de protección y capacitación.</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="text-indigo-600 font-mono-code text-2xl font-extrabold">20,000 t</div>
+            <div class="text-sm font-bold text-slate-800 mt-1">Plásticos reciclados</div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-2">PET, PE y PP convertidos en perfiles duraderos. Cero quema.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: PROCESO -->
+    <section id="tab-balance" class="tab-content space-y-6 hidden">
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-diagram-project text-emerald-500"></i>
+              Flujo de procesamiento de materiales
+            </h2>
+            <p class="text-sm text-slate-600 mt-1">Cada día procesamos <span class="text-emerald-600 font-bold font-mono-code">1,600 toneladas</span> (448,000 toneladas al año) siguiendo estos pasos:</p>
+          </div>
+          <div class="bg-slate-100 px-4 py-2 rounded-lg border border-slate-200 text-sm font-mono-code text-slate-700">
+            Entrada: <span class="text-emerald-600 font-bold">100% escombro heterogéneo</span>
+          </div>
+        </div>
+
+        <!-- Stream Diagram -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 text-sm">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="font-bold text-slate-500 uppercase text-xs block mb-2">1. Recepción y pesaje</span>
+              <div class="text-base font-extrabold text-slate-800 mb-1">Escombros sin procesar</div>
+              <p class="text-slate-600 text-xs sm:text-sm">Báscula de 60 toneladas. Registro e inspección de entrada.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200 font-mono-code text-emerald-600 font-bold">
+              1,600 t/día
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-amber-200 flex flex-col justify-between">
+            <div>
+              <span class="font-bold text-amber-600 uppercase text-xs block mb-2">2. Clasificación inicial</span>
+              <div class="text-base font-bold text-slate-800">Separación manual</div>
+              <p class="text-slate-600 text-xs sm:text-sm mt-1">Cuadrilla retira voluminosos, maderas y plásticos gruesos.</p>
+            </div>
+            <div class="mt-3 text-xs sm:text-sm space-y-1 font-mono-code">
+              <div class="text-amber-600">⚡ Chatarra: 3-5%</div>
+              <div class="text-cyan-600">⚡ Plásticos: 2-3%</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="font-bold text-slate-500 uppercase text-xs block mb-2">3. Trituración y cribado</span>
+              <div class="text-base font-bold text-slate-800">Reducción de tamaño</div>
+              <p class="text-slate-600 text-xs sm:text-sm mt-1">Trituradoras de mandíbula y cribas vibratorias clasifican el material.</p>
+            </div>
+            <div class="mt-3 text-xs sm:text-sm space-y-1 font-mono-code text-slate-600">
+              <div>• Tamaño de 800 mm a 0-40 mm</div>
+              <div>• Recirculación de gruesos</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-cyan-200 flex flex-col justify-between">
+            <div>
+              <span class="font-bold text-cyan-600 uppercase text-xs block mb-2">4. Lavado y control</span>
+              <div class="text-base font-bold text-slate-800">Eliminación de sales</div>
+              <p class="text-slate-600 text-xs sm:text-sm mt-1">Lavado técnico y pruebas continuas de cloruros en laboratorio.</p>
+            </div>
+            <div class="mt-3 text-xs sm:text-sm space-y-1 font-mono-code">
+              <div class="text-emerald-600">&lt;0.06% Cl⁻ → Bloques</div>
+              <div class="text-amber-600">&gt;0.06% Cl⁻ → Sub-base vial</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 flex flex-col justify-between">
+            <div>
+              <span class="font-bold text-emerald-600 uppercase text-xs block mb-2">5. Productos finales</span>
+              <div class="text-base font-bold text-slate-800">Reincorporación</div>
+              <p class="text-slate-600 text-xs sm:text-sm mt-1">Piedra, bloques, adoquines y metal recuperado para reconstrucción.</p>
+            </div>
+            <div class="mt-3 text-xs sm:text-sm font-mono-code text-emerald-600 font-bold">
+              100% reutilizado
+            </div>
+          </div>
+        </div>
+
+        <!-- Mass Breakdown Chart -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <h3 class="text-base font-bold text-slate-800 mb-3">Composición del material procesado</h3>
+            <div class="h-64 relative">
+              <canvas id="chartMassDistribution"></canvas>
+            </div>
+          </div>
+
+          <!-- Specs List -->
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3 text-sm">
+            <h3 class="text-base font-bold text-slate-800 mb-3">Granulometría de salida</h3>
+            
+            <div class="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-800">Piedra gruesa (20-40 mm)</span>
+                <p class="text-slate-600 text-xs sm:text-sm">Para relleno de terrenos y bases de carreteras.</p>
+              </div>
+              <span class="font-mono-code font-bold text-emerald-600 text-base">~50%</span>
+            </div>
+
+            <div class="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-800">Piedra media (5-20 mm)</span>
+                <p class="text-slate-600 text-xs sm:text-sm">Para vaciados no estructurales y rellenos.</p>
+              </div>
+              <span class="font-mono-code font-bold text-teal-600 text-base">~25%</span>
+            </div>
+
+            <div class="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-800">Arena fina (0-5 mm)</span>
+                <p class="text-slate-600 text-xs sm:text-sm">Para fabricar bloques y adoquines de construcción.</p>
+              </div>
+              <span class="font-mono-code font-bold text-cyan-600 text-base">~18%</span>
+            </div>
+
+            <div class="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-800">Acero recuperado</span>
+                <p class="text-slate-600 text-xs sm:text-sm">Extraído mediante separadores magnéticos.</p>
+              </div>
+              <span class="font-mono-code font-bold text-amber-600 text-base">~4%</span>
+            </div>
+
+            <div class="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-800">Plásticos ligeros</span>
+                <p class="text-slate-600 text-xs sm:text-sm">Mezcla seleccionada para perfiles urbanos.</p>
+              </div>
+              <span class="font-mono-code font-bold text-indigo-600 text-base">~3%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: AGUA Y CLORUROS (MEJORADA) -->
+    <section id="tab-calidad" class="tab-content space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Water Loop Diagram (rediseñado) -->
+        <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+          <h2 class="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-water text-cyan-500"></i>
+            Circuito cerrado de lavado: reutilización del 95% del agua
+          </h2>
+          <p class="text-sm text-slate-600 mb-4">Así funciona el sistema de recirculación que protege el agua de La Guaira:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
+              <span class="text-xs font-bold text-red-600 uppercase">Sistema tradicional (sin recirculación)</span>
+              <div class="text-2xl font-bold font-mono-code text-red-600 mt-1">40-60 m³/hora</div>
+              <p class="text-xs sm:text-sm text-slate-600 mt-2">
+                Consumiría más de <strong>800 m³ diarios</strong> —equivalente al agua que usan 320 casas en un día—. 
+                La Guaira sufre escasez de agua, por lo que este sistema no es viable.
+              </p>
+            </div>
+
+            <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+              <span class="text-xs font-bold text-emerald-600 uppercase">Circuito cerrado propuesto</span>
+              <div class="text-2xl font-bold font-mono-code text-emerald-600 mt-1">5 m³/día (reposición)</div>
+              <p class="text-xs sm:text-sm text-slate-600 mt-2">
+                <strong>Ahorro del 95%</strong>. Solo reponemos 5 m³ al día, el equivalente al consumo de 2 casas. 
+                El resto se recircula continuamente.
+              </p>
+            </div>
+          </div>
+
+          <!-- Explicación del ciclo -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
+            <h4 class="font-semibold text-slate-800 text-sm mb-2">¿Cómo funciona?</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-700">
+              <div class="space-y-1">
+                <p><span class="font-medium">1. Agua sucia del lavado</span> → pasa al tanque decantador.</p>
+                <p><span class="font-medium">2. Decantación:</span> los sólidos (lodos) caen al fondo por gravedad.</p>
+                <p><span class="font-medium">3. Agua clarificada</span> se bombea de vuelta al sistema de lavado.</p>
+              </div>
+              <div class="space-y-1">
+                <p><span class="font-medium">4. Lodos del fondo</span> → se envían a la prensa de lodos.</p>
+                <p><span class="font-medium">5. Prensa de lodos:</span> extrae el agua restante de los lodos.</p>
+                <p><span class="font-medium">6. Agua recuperada</span> se reincorpora al ciclo; el lodo seco se dispone en vertedero autorizado.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Impacto ambiental -->
+          <div class="p-3 bg-cyan-50 rounded-lg border border-cyan-200 text-sm text-slate-700 mb-4">
+            <i class="fa-solid fa-shield-halved text-cyan-500 mr-2"></i>
+            <span class="font-medium">Impacto ambiental:</span> Al no descargar agua contaminada, se protegen los ríos y quebradas de La Guaira. 
+            El sistema opera sin agotar las fuentes locales, y los lodos se gestionan de forma controlada.
+          </div>
+
+          <!-- Gráfico -->
+          <div class="h-64 relative">
+            <canvas id="chartWaterComparison"></canvas>
+          </div>
+          <p class="text-xs text-slate-500 mt-2 text-center">Comparativa de consumo: 50 m³/hora vs 5 m³/día (reposición)</p>
+        </div>
+
+        <!-- Chloride Control Simulator -->
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-vial-circle-check text-emerald-500"></i>
+              Control de cloruros
+            </h3>
+            <p class="text-sm text-slate-600 mb-5">Deslice el nivel de cloruros para ver el destino del material:</p>
+
+            <div class="space-y-5 my-6">
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-slate-700 font-semibold">Concentración de cloruros:</span>
+                  <span id="sliderClValue" class="font-mono-code font-bold text-cyan-600 text-base">0.04%</span>
+                </div>
+                <input id="sliderChloride" type="range" min="0.01" max="0.20" step="0.01" value="0.04" class="w-full accent-emerald-500 bg-slate-200 h-2.5 rounded-lg cursor-pointer">
+              </div>
+
+              <div id="chlorideStatusBox" class="p-4 rounded-xl border bg-emerald-50 border-emerald-200 transition-all">
+                <div class="flex items-center gap-3">
+                  <i id="chlorideIcon" class="fa-solid fa-circle-check text-emerald-500 text-2xl"></i>
+                  <div>
+                    <h4 id="chlorideStatusTitle" class="text-sm font-bold text-emerald-700">Material apto para construcción</h4>
+                    <p id="chlorideStatusDesc" class="text-xs sm:text-sm text-slate-700 mt-0.5">Cumple con el estándar de seguridad (menos de 0.06% de cloruros). No causará corrosión en el acero.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-200 pt-4 text-xs sm:text-sm space-y-2">
+            <span class="font-bold text-slate-700 block">Protocolos del laboratorio móvil:</span>
+            <div class="flex justify-between text-slate-600">
+              <span>Granulometría:</span>
+              <span class="text-slate-800 font-mono-code">Cada 200 toneladas</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Cloruros:</span>
+              <span class="text-slate-800 font-mono-code">Cada 500 toneladas</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Absorción y densidad:</span>
+              <span class="text-slate-800 font-mono-code">Cada 1,000 toneladas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: EQUIPOS -->
+    <section id="tab-equipos" class="tab-content space-y-6 hidden">
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-truck-monster text-amber-500"></i>
+              Equipos y maquinaria
+            </h2>
+            <p class="text-sm text-slate-600 mt-1">Ubicación: Zona Industrial de Maiquetía (terreno de 2 a 3 hectáreas)</p>
+          </div>
+          <span class="px-3 py-1.5 text-xs sm:text-sm font-bold rounded bg-amber-50 text-amber-700 border border-amber-200">
+            Generador diésel de 250 kVA (energía de respaldo)
+          </span>
+        </div>
+
+        <!-- Equipment Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-sm">
+          
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-slate-800 text-base">Maquinaria pesada móvil</span>
+              <i class="fa-solid fa-dolly text-amber-500 text-xl"></i>
+            </div>
+            <ul class="space-y-2.5 text-slate-700">
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>2 excavadoras de oruga</span>
+                <span class="font-mono-code text-amber-600 font-bold">120-150 m³/h</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>2 cargadores frontales</span>
+                <span class="font-mono-code text-amber-600 font-bold">200-250 t/h</span>
+              </li>
+              <li class="flex justify-between">
+                <span>15 camiones volquete</span>
+                <span class="font-mono-code text-amber-600 font-bold">30 m³ / viaje</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-slate-800 text-base">Planta trituradora modular</span>
+              <i class="fa-solid fa-gears text-emerald-500 text-xl"></i>
+            </div>
+            <ul class="space-y-2.5 text-slate-700">
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>5 trituradoras de mandíbula</span>
+                <span class="font-mono-code text-emerald-600 font-bold">30 t/h c/u</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>1 trituradora de impacto</span>
+                <span class="font-mono-code text-emerald-600 font-bold">150-200 t/h</span>
+              </li>
+              <li class="flex justify-between">
+                <span>2 cribas vibratorias</span>
+                <span class="font-mono-code text-emerald-600 font-bold">250 t/h</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-slate-800 text-base">Lavado y separación</span>
+              <i class="fa-solid fa-filter text-cyan-500 text-xl"></i>
+            </div>
+            <ul class="space-y-2.5 text-slate-700">
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>1 tornillo lavador de áridos</span>
+                <span class="font-mono-code text-cyan-600 font-bold">120 t/h</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>2 separadores magnéticos de alta potencia</span>
+                <span class="font-mono-code text-cyan-600 font-bold">2,000 Gauss</span>
+              </li>
+              <li class="flex justify-between">
+                <span>1 separador de plásticos</span>
+                <span class="font-mono-code text-cyan-600 font-bold">Eficacia 80%</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-slate-800 text-base">Líneas de transformación</span>
+              <i class="fa-solid fa-cubes text-teal-500 text-xl"></i>
+            </div>
+            <ul class="space-y-2.5 text-slate-700">
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>1 bloquera hidráulica</span>
+                <span class="font-mono-code text-teal-600 font-bold">1,500 bloques/turno</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>1 extrusora de perfiles</span>
+                <span class="font-mono-code text-teal-600 font-bold">200 kg/h</span>
+              </li>
+              <li class="flex justify-between">
+                <span>1 molino de plásticos</span>
+                <span class="font-mono-code text-teal-600 font-bold">500 kg/h</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-slate-800 text-base">Laboratorio móvil</span>
+              <i class="fa-solid fa-microscope text-indigo-500 text-xl"></i>
+            </div>
+            <ul class="space-y-2.5 text-slate-700">
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>Equipo de tamizado</span>
+                <span class="font-mono-code text-indigo-600 font-bold">100 a 0.15 mm</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>Equipo de titulación de cloruros</span>
+                <span class="font-mono-code text-indigo-600 font-bold">Precisión química</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Prensa de ensayos</span>
+                <span class="font-mono-code text-indigo-600 font-bold">Prueba de resistencia</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-slate-800 text-base">Suministro de energía y agua</span>
+              <i class="fa-solid fa-bolt text-yellow-500 text-xl"></i>
+            </div>
+            <ul class="space-y-2.5 text-slate-700">
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>Generador diésel principal</span>
+                <span class="font-mono-code text-yellow-600 font-bold">250 kVA</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-200 pb-1.5">
+                <span>Consumo de combustible</span>
+                <span class="font-mono-code text-yellow-600 font-bold">1,100 L/día</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Tanques de almacenamiento</span>
+                <span class="font-mono-code text-yellow-600 font-bold">2 × 50 m³</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: INVERSIÓN -->
+    <section id="tab-economico" class="tab-content space-y-6 hidden">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card p-6 rounded-2xl">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Inversión inicial requerida</span>
+          <div class="text-3xl font-extrabold font-mono-code text-emerald-600 mt-2">$2.26 - $3.39 millones</div>
+          <p class="text-sm text-slate-600 mt-2">Incluye maquinaria pesada ($1.5 millones), planta de procesamiento ($500 mil) y obras civiles ($300 mil).</p>
+          <div class="mt-4 h-48 relative">
+            <canvas id="chartCapexBreakdown"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Costos operativos mensuales</span>
+          <div class="text-3xl font-extrabold font-mono-code text-cyan-600 mt-2">$61,300 - $94,300 / mes</div>
+          <p class="text-sm text-slate-600 mt-2">Costo anual: $735,600 - $1.13 millones. El combustible representa entre 40% y 50% del total.</p>
+          <div class="mt-4 h-48 relative">
+            <canvas id="chartOpexBreakdown"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Streams Grid -->
+      <div class="glass-card p-6 rounded-2xl">
+        <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-coins text-amber-500"></i>
+          Fuentes de ingresos proyectadas (a capacidad completa)
+        </h2>
+        <p class="text-sm text-slate-600 mb-4">Proyección basada en operación a 1,600 t/día durante 280 días al año.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-sm">
+          
+          <div class="p-5 bg-slate-50 rounded-xl border border-emerald-200">
+            <div class="flex justify-between font-bold text-slate-800 mb-1.5">
+              <span>1. Tasa de recepción</span>
+              <span class="text-emerald-600 font-mono-code">$8.06 millones/año</span>
+            </div>
+            <p class="text-slate-600 text-xs sm:text-sm">$18/ton × 448,000 ton/año. Principal fuente de ingresos.</p>
+          </div>
+
+          <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="flex justify-between font-bold text-slate-800 mb-1.5">
+              <span>2. Venta de acero recuperado</span>
+              <span class="text-amber-600 font-mono-code">$3.0 - $3.75 millones/año</span>
+            </div>
+            <p class="text-slate-600 text-xs sm:text-sm">15,000 ton de chatarra a $200-250/ton.</p>
+          </div>
+
+          <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="flex justify-between font-bold text-slate-800 mb-1.5">
+              <span>3. Venta de agregados reciclados</span>
+              <span class="text-cyan-600 font-mono-code">$1.8 - $2.7 millones/año</span>
+            </div>
+            <p class="text-slate-600 text-xs sm:text-sm">224,000 ton de piedra y base para vialidad.</p>
+          </div>
+
+          <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="flex justify-between font-bold text-slate-800 mb-1.5">
+              <span>4. Bloques y adoquines</span>
+              <span class="text-teal-600 font-mono-code">$550,000 - $800,000 /año</span>
+            </div>
+            <p class="text-slate-600 text-xs sm:text-sm">Producción de bloques y adoquines para reconstrucción.</p>
+          </div>
+
+          <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="flex justify-between font-bold text-slate-800 mb-1.5">
+              <span>5. Perfiles y mobiliario urbano</span>
+              <span class="text-indigo-600 font-mono-code">$230,000 - $370,000 /año</span>
+            </div>
+            <p class="text-slate-600 text-xs sm:text-sm">20,000 ton de plástico reciclado convertido en perfiles.</p>
+          </div>
+
+          <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="flex justify-between font-bold text-slate-800 mb-1.5">
+              <span>6. Trueque de materiales</span>
+              <span class="text-yellow-600 font-mono-code">Ahorro directo</span>
+            </div>
+            <p class="text-slate-600 text-xs sm:text-sm">Intercambio de arena reciclada por cemento y combustible.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 6: IMPACTO AMBIENTAL -->
+    <section id="tab-ambiental" class="tab-content space-y-6 hidden">
+      <div class="glass-card p-6 rounded-2xl">
+        <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-leaf text-emerald-500"></i>
+          Indicadores de impacto ambiental
+        </h2>
+        <p class="text-sm text-slate-600 mb-6">
+          Beneficios ambientales directos del procesamiento de <strong>448,000 toneladas anuales</strong> (1,600 t/día durante 280 días). 
+          Todo el material se recicla o va a vertedero autorizado; nada llega a la costa.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <div class="bg-slate-50 p-5 rounded-xl border border-emerald-200">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-water text-emerald-500 text-2xl"></i>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Ahorro de agua dulce</span>
+            </div>
+            <div class="text-3xl font-extrabold font-mono-code text-emerald-600 mt-1">1.2 millones de litros/año</div>
+            <p class="text-sm text-slate-600 mt-1">El sistema recircula el 95% del agua de lavado. Sin él, gastaríamos 24 millones de litros anuales solo para limpiar áridos.</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-cyan-200">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-tree text-cyan-500 text-2xl"></i>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Emisiones de CO₂ evitadas</span>
+            </div>
+            <div class="text-3xl font-extrabold font-mono-code text-cyan-600 mt-1">180 toneladas/año</div>
+            <p class="text-sm text-slate-600 mt-1">Al operar en Maiquetía, los camiones recorren 20 km en lugar de 60 km a vertederos lejanos.</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-teal-200">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-recycle text-teal-500 text-2xl"></i>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Acero recuperado</span>
+            </div>
+            <div class="text-3xl font-extrabold font-mono-code text-teal-600 mt-1">15,000 toneladas/año</div>
+            <p class="text-sm text-slate-600 mt-1">El separador magnético extrae casi el 4% del peso total. Se vende como chatarra y evita la extracción de mineral nuevo.</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-amber-200">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-mountain text-amber-500 text-2xl"></i>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Plásticos reciclados</span>
+            </div>
+            <div class="text-3xl font-extrabold font-mono-code text-amber-600 mt-1">20,000 toneladas/año</div>
+            <p class="text-sm text-slate-600 mt-1">PET, PE y PP segregados se convierten en perfiles duraderos. Cero plásticos quemados ni lixiviación en vertedero.</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-fuchsia-200">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-earth-americas text-fuchsia-500 text-2xl"></i>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Costa protegida</span>
+            </div>
+            <div class="text-3xl font-extrabold font-mono-code text-fuchsia-600 mt-1">448,000 toneladas/año</div>
+            <p class="text-sm text-slate-600 mt-1">Todo el material procesado se recicla o va a vertedero autorizado. Nada llega a la costa, playas ni quebradas.</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-xl border border-indigo-200">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-building text-indigo-500 text-2xl"></i>
+              <span class="text-xs font-bold uppercase text-slate-500 tracking-wider">Uso no estructural garantizado</span>
+            </div>
+            <div class="text-3xl font-extrabold font-mono-code text-indigo-600 mt-1">Siempre</div>
+            <p class="text-sm text-slate-600 mt-1">El árido reciclado solo se destina a relleno, sub-base y bloques no portantes. Previene fallos por corrosión y evita nuevos escombros prematuros.</p>
+          </div>
+
+        </div>
+
+        <!-- Resumen adicional -->
+        <div class="mt-8 p-5 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span class="text-slate-500 block font-medium">Procesamiento diario</span>
+              <span class="text-2xl font-mono-code font-bold text-emerald-600">1,600 t/día</span>
+              <p class="text-slate-600 text-xs mt-1">Durante 280 días al año.</p>
+            </div>
+            <div>
+              <span class="text-slate-500 block font-medium">Índice de circularidad</span>
+              <span class="text-2xl font-mono-code font-bold text-cyan-600">94%</span>
+              <p class="text-slate-600 text-xs mt-1">Material reincorporado al ciclo productivo.</p>
+            </div>
+            <div>
+              <span class="text-slate-500 block font-medium">Reducción de distancia de flete</span>
+              <span class="text-2xl font-mono-code font-bold text-teal-600">~40 km</span>
+              <p class="text-slate-600 text-xs mt-1">Por viaje frente a vertederos lejanos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 7: IMPACTO SOCIAL -->
+    <section id="tab-social" class="tab-content space-y-6 hidden">
+      <div class="glass-card p-6 rounded-2xl">
+        <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-users text-indigo-500"></i>
+          Impacto social y mano de obra local
+        </h2>
+        <p class="text-sm text-slate-600 mb-6">
+          El modelo operativo genera empleos formales, prioriza la contratación local y garantiza condiciones laborales dignas.
+        </p>
+
+        <!-- Social Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+          <div class="bg-slate-50 p-5 rounded-xl border border-indigo-200">
+            <span class="text-xs font-bold uppercase text-indigo-600 tracking-wider">Personal total</span>
+            <div class="text-3xl font-extrabold font-mono-code text-indigo-600 mt-2">65-75</div>
+            <p class="text-sm text-slate-600 mt-1">55-65 operativos + 8-10 administrativos</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-teal-200">
+            <span class="text-xs font-bold uppercase text-teal-600 tracking-wider">Contratación local</span>
+            <div class="text-3xl font-extrabold font-mono-code text-teal-600 mt-2">&gt;90%</div>
+            <p class="text-sm text-slate-600 mt-1">Mano de obra del Estado La Guaira</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-emerald-200">
+            <span class="text-xs font-bold uppercase text-emerald-600 tracking-wider">Familias beneficiadas</span>
+            <div class="text-3xl font-extrabold font-mono-code text-emerald-600 mt-2">260-300</div>
+            <p class="text-sm text-slate-600 mt-1">Aprox. 4 personas por hogar</p>
+          </div>
+        </div>
+
+        <!-- Staff Distribution Table -->
+        <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-list-ul text-indigo-500"></i>
+          Distribución de personal por rol (operativo)
+        </h3>
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+              <tr>
+                <th class="p-3 font-semibold">Rol</th>
+                <th class="p-3 font-semibold text-center">Cantidad (por turno)</th>
+                <th class="p-3 font-semibold text-center">Salario mensual (USD)</th>
+                <th class="p-3 font-semibold">Perfil requerido</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-slate-700">
+              <tr><td class="p-3">Operador de retroexcavadora</td><td class="p-3 text-center">2</td><td class="p-3 text-center">400-500</td><td class="p-3">Certificación y 3 años de experiencia</td></tr>
+              <tr><td class="p-3">Operador de cargador frontal</td><td class="p-3 text-center">2</td><td class="p-3 text-center">400-500</td><td class="p-3">Certificación, experiencia en trituración</td></tr>
+              <tr><td class="p-3">Conductor de volquete</td><td class="p-3 text-center">10-12</td><td class="p-3 text-center">300-350</td><td class="p-3">Licencia profesional, conocimiento de rutas locales</td></tr>
+              <tr><td class="p-3">Operador de trituradora</td><td class="p-3 text-center">2</td><td class="p-3 text-center">450-550</td><td class="p-3">Conocimiento en operación de trituradoras</td></tr>
+              <tr><td class="p-3">Operador de sistema de lavado</td><td class="p-3 text-center">2</td><td class="p-3 text-center">400-450</td><td class="p-3">Conocimiento en tratamiento de aguas</td></tr>
+              <tr><td class="p-3">Ayudante de planta (segregación)</td><td class="p-3 text-center">8-10</td><td class="p-3 text-center">200-250</td><td class="p-3">Capacitación en identificación de materiales</td></tr>
+              <tr><td class="p-3">Técnico de laboratorio</td><td class="p-3 text-center">1</td><td class="p-3 text-center">500-600</td><td class="p-3">Técnico superior en geología o ingeniería civil</td></tr>
+              <tr><td class="p-3">Mecánico de maquinaria pesada</td><td class="p-3 text-center">1</td><td class="p-3 text-center">500-600</td><td class="p-3">Experiencia en CAT / Komatsu</td></tr>
+              <tr><td class="p-3">Electricista industrial</td><td class="p-3 text-center">1</td><td class="p-3 text-center">450-550</td><td class="p-3">Control de motores y generadores</td></tr>
+              <tr><td class="p-3">Supervisor de planta</td><td class="p-3 text-center">1</td><td class="p-3 text-center">700-900</td><td class="p-3">Ingeniero civil/mecánico, 5+ años de experiencia</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 text-sm text-slate-600 space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <p><span class="font-bold text-slate-800">Objetivo:</span> Que el 80% del personal permanezca más de 6 meses, asegurando estabilidad laboral.</p>
+          <p><span class="font-bold text-slate-800">Equipo de protección:</span> Cada trabajador recibe casco, guantes, botas con punta de acero, gafas, protectores auditivos, mascarilla N95 y chaleco reflectivo.</p>
+          <p><span class="font-bold text-slate-800">Capacitación:</span> Programas de formación continua en segregación, seguridad industrial y control de calidad.</p>
+        </div>
+
+        <!-- Gráfico de distribución -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <h3 class="text-base font-bold text-slate-800 mb-3">Distribución por categoría de personal</h3>
+            <div class="h-64 relative">
+              <canvas id="chartSocialDistribution"></canvas>
+            </div>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-center">
+            <h3 class="text-base font-bold text-slate-800 mb-3">Beneficiarios indirectos</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between border-b border-slate-200 pb-2">
+                <span class="text-slate-600">Familias de trabajadores</span>
+                <span class="font-mono-code font-bold text-indigo-600">260-300</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-200 pb-2">
+                <span class="text-slate-600">Proveedores locales (combustible, alimentos, hospedaje)</span>
+                <span class="font-mono-code font-bold text-cyan-600">+50</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-600">Escuelas y centros de salud (apoyo comunitario)</span>
+                <span class="font-mono-code font-bold text-emerald-600">Indirecto</span>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-4">El proyecto dinamiza la economía local y reduce la presión sobre servicios sociales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-200 bg-white/80 py-4 text-center text-sm text-slate-500">
+    <p>Plan de Gestión Ambiental y Procesamiento de Escombros - Estado La Guaira</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // Tab Switching Logic
+      window.switchTab = function(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('text-emerald-700', 'bg-emerald-50', 'border', 'border-emerald-200');
+          btn.classList.add('text-slate-600');
+        });
+
+        const target = document.getElementById(tabId);
+        if (target) target.classList.remove('hidden');
+
+        const activeBtn = document.getElementById('btn-' + tabId);
+        if (activeBtn) {
+          activeBtn.classList.add('text-emerald-700', 'bg-emerald-50', 'border', 'border-emerald-200');
+          activeBtn.classList.remove('text-slate-600');
+        }
+      };
+
+      // Chart.js Default Settings (modo claro)
+      Chart.defaults.color = '#334155';
+      Chart.defaults.font.family = 'Inter';
+      Chart.defaults.font.size = 13;
+
+      function safeGetCanvas(id) {
+        const canvas = document.getElementById(id);
+        return canvas ? canvas.getContext('2d') : null;
+      }
+
+      // Chart 1: Time Comparison
+      const ctxTime = safeGetCanvas('chartTimeComparison');
+      if (ctxTime) {
+        new Chart(ctxTime, {
+          type: 'bar',
+          data: {
+            labels: ['Sistema tradicional (100 cam/día)', 'Planta modular propuesta'],
+            datasets: [{
+              label: 'Años para limpieza total',
+              data: [13, 3.5],
+              backgroundColor: ['#ef4444', '#10b981'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'Años' } } }
+          }
+        });
+      }
+
+      // Chart 2: Cost Comparison
+      const ctxCost = safeGetCanvas('chartCostComparison');
+      if (ctxCost) {
+        new Chart(ctxCost, {
+          type: 'bar',
+          data: {
+            labels: ['Vertedero lejano', 'Planta de procesamiento', 'Vertido ilegal (mar)'],
+            datasets: [{
+              label: 'Costo $/tonelada',
+              data: [32, 18, 0],
+              backgroundColor: ['#f59e0b', '#06b6d4', '#94a3b8'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'USD / Tonelada' } } }
+          }
+        });
+      }
+
+      // Chart 3: Mass Distribution
+      const ctxMass = safeGetCanvas('chartMassDistribution');
+      if (ctxMass) {
+        new Chart(ctxMass, {
+          type: 'doughnut',
+          data: {
+            labels: ['Piedra gruesa (20-40 mm)', 'Piedra media (5-20 mm)', 'Arena fina (0-5 mm)', 'Acero recuperado', 'Plásticos ligeros'],
+            datasets: [{
+              data: [50, 25, 18, 4, 3],
+              backgroundColor: ['#10b981', '#14b8a6', '#06b6d4', '#f59e0b', '#6366f1']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
+
+      // Chart 4: Water Comparison (se mantiene igual, pero ya mejoramos el texto)
+      const ctxWater = safeGetCanvas('chartWaterComparison');
+      if (ctxWater) {
+        new Chart(ctxWater, {
+          type: 'bar',
+          data: {
+            labels: ['Sin recirculación (m³/hora)', 'Circuito cerrado (m³/día)'],
+            datasets: [{
+              label: 'Consumo de agua dulce',
+              data: [50, 5],
+              backgroundColor: ['#ef4444', '#06b6d4'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      }
+
+      // Chart 5: CAPEX Breakdown
+      const ctxCapex = safeGetCanvas('chartCapexBreakdown');
+      if (ctxCapex) {
+        new Chart(ctxCapex, {
+          type: 'pie',
+          data: {
+            labels: ['Maquinaria pesada', 'Planta de trituración', 'Obras civiles', 'Generadores y tanques', 'Laboratorio móvil'],
+            datasets: [{
+              data: [1500000, 500000, 300000, 125000, 75000],
+              backgroundColor: ['#10b981', '#06b6d4', '#f59e0b', '#6366f1', '#ec4899']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
+
+      // Chart 6: OPEX Breakdown
+      const ctxOpex = safeGetCanvas('chartOpexBreakdown');
+      if (ctxOpex) {
+        new Chart(ctxOpex, {
+          type: 'doughnut',
+          data: {
+            labels: ['Combustible diésel (45%)', 'Nómina de operadores (35%)', 'Mantenimiento y repuestos (15%)', 'Insumos de laboratorio (5%)'],
+            datasets: [{
+              data: [45, 35, 15, 5],
+              backgroundColor: ['#f59e0b', '#10b981', '#06b6d4', '#6366f1']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
+
+      // Chart 7: Social Distribution
+      const ctxSocial = safeGetCanvas('chartSocialDistribution');
+      if (ctxSocial) {
+        new Chart(ctxSocial, {
+          type: 'bar',
+          data: {
+            labels: ['Operadores', 'Ayudantes', 'Técnicos', 'Supervisores', 'Administrativos'],
+            datasets: [{
+              label: 'Cantidad de personas',
+              data: [30, 20, 8, 4, 10],
+              backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'Personas' } } }
+          }
+        });
+      }
+
+      // --- Interactive Chloride Slider ---
+      const sliderChloride = document.getElementById('sliderChloride');
+      const sliderClValue = document.getElementById('sliderClValue');
+      const chlorideStatusBox = document.getElementById('chlorideStatusBox');
+      const chlorideIcon = document.getElementById('chlorideIcon');
+      const chlorideStatusTitle = document.getElementById('chlorideStatusTitle');
+      const chlorideStatusDesc = document.getElementById('chlorideStatusDesc');
+
+      if (sliderChloride) {
+        sliderChloride.addEventListener('input', function(e) {
+          const val = parseFloat(e.target.value);
+          if (sliderClValue) sliderClValue.innerText = val.toFixed(2) + '%';
+
+          if (val <= 0.06) {
+            if (chlorideStatusBox) {
+              chlorideStatusBox.className = 'p-4 rounded-xl border bg-emerald-50 border-emerald-200 transition-all';
+            }
+            if (chlorideIcon) chlorideIcon.className = 'fa-solid fa-circle-check text-emerald-500 text-2xl';
+            if (chlorideStatusTitle) {
+              chlorideStatusTitle.className = 'text-sm font-bold text-emerald-700';
+              chlorideStatusTitle.innerText = 'Material apto para construcción';
+            }
+            if (chlorideStatusDesc) {
+              chlorideStatusDesc.innerText = 'Cumple con el estándar de seguridad (menos de 0.06% de cloruros). No causará corrosión en el acero.';
+            }
+          } else {
+            if (chlorideStatusBox) {
+              chlorideStatusBox.className = 'p-4 rounded-xl border bg-amber-50 border-amber-200 transition-all';
+            }
+            if (chlorideIcon) chlorideIcon.className = 'fa-solid fa-triangle-exclamation text-amber-500 text-2xl';
+            if (chlorideStatusTitle) {
+              chlorideStatusTitle.className = 'text-sm font-bold text-amber-700';
+              chlorideStatusTitle.innerText = 'Derivar a sub-base vial (no estructural)';
+            }
+            if (chlorideStatusDesc) {
+              chlorideStatusDesc.innerText = 'Excede el límite de cloruros (> 0.06% Cl⁻). Se destina a relleno de calles y bases viales.';
+            }
+          }
+        });
+      }
+
+      // Asegurar que la pestaña de resumen esté activa al inicio
+      switchTab('tab-resumen');
+
+    }); // fin DOMContentLoaded
+  </script>
+</body>
+</html>
